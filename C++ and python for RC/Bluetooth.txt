@@ -1,0 +1,47 @@
+Per far comunicare due Raspberry Pi tramite Bluetooth, dovrai assicurarti che entrambi i dispositivi dispongano di una scheda Bluetooth e che siano configurati per l'utilizzo del Bluetooth. Inoltre, dovrai installare il software necessario su entrambi i dispositivi.
+
+Ecco i passi che puoi seguire per configurare la comunicazione Bluetooth tra due Raspberry Pi:
+
+1.Assicurati che entrambi i Raspberry Pi dispongano di una scheda Bluetooth. Se uno dei due non ne ha una, dovrai acquistarne e installarne una.
+
+1.Assicurati che il Bluetooth sia abilitato su entrambi i dispositivi. Su Raspberry Pi, puoi abilitare il Bluetooth dalle impostazioni del sistema o utilizzando il comando "sudo systemctl enable bluetooth".
+
+1.Assicurati di avere installato il software Bluetooth su entrambi i dispositivi. Su Raspberry Pi, puoi farlo con il comando "sudo apt-get install bluez python-bluez".
+
+1.Una volta installato il software Bluetooth, dovrai configurare l'utilizzo del Bluetooth su entrambi i dispositivi. Su Raspberry Pi, puoi farlo utilizzando il comando "sudo bluetoothctl".
+
+1.Dopo aver configurato il Bluetooth su entrambi i dispositivi, dovrai associarli tra loro. Per fare ciò, dovrai mettere uno dei due dispositivi in modalità "discoverable" e utilizzare il comando "pair MAC_ADDRESS" sull'altro dispositivo, dove MAC_ADDRESS è l'indirizzo MAC del dispositivo in modalità "discoverable".
+
+1.Una volta associati, dovrai configurare la comunicazione seriale Bluetooth su entrambi i dispositivi. Su Raspberry Pi, puoi farlo utilizzando il comando "sudo rfcomm bind rfcomm0 MAC_ADDRESS".
+
+1.A questo punto, dovresti essere in grado di comunicare tra i due dispositivi utilizzando la comunicazione seriale Bluetooth. Puoi utilizzare il comando "screen /dev/rfcomm0" su entrambi i dispositivi per aprire una connessione seriale e iniziare a inviare e ricevere dati.
+
+
+---------------------------------------
+import time
+import serial
+
+# Invia il messaggio di saluto
+def send_message(message):
+    ser = serial.Serial("/dev/ttyS0", 9600)
+    ser.write(message.encode())
+    ser.close()
+
+# Ricevi il messaggio di saluto e invia una risposta
+def receive_message():
+    ser = serial.Serial("/dev/ttyS0", 9600)
+    data = ser.readline().decode().strip()
+    print("Received message: %s" % data)
+    ser.close()
+
+    if data == "ciao":
+        send_message("buongiorno")
+
+send_message("ciao")
+receive_message()
+
+
+//Raspberry Pi che invia il messaggio "ciao" attende di ricevere una risposta dall'altro Raspberry Pi. Se il messaggio ricevuto è "ciao", il Raspberry Pi risponde con il messaggio "buongiorno". Altrimenti, il Raspberry Pi non invia alcuna risposta.
+
+Come nel codice precedente, "ttyS0" è il nome del dispositivo seriale utilizzato dal modulo HC-05. Se utilizzi un altro dispositivo seriale, dovrai modificare il codice di conseguenza.
+
